@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fredericka+the+Great&family=Grandstander:ital,wght@0,100..900;1,100..900&family=Honk&family=Jaldi:wght@400;700&family=Love+Ya+Like+A+Sister&display=swap" rel="stylesheet">
+   
+    <title>Popstar Quiz</title>
+    <style>
+        body {
+            font-family: "Grandstander", cursive;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #b0b8ce;
+        }
+        h1 {
+            font-family: "Love Ya Like A Sister", cursive;
+            text-align: center;
+        }
+        h2 {
+            font-family: "Jaldi", sans-serif;
+            text-align: center;
+        }
+        .quiz-container {
+            width: 600px;
+            height: 450px;
+            padding-left: 20px;
+            padding-right: 20px;
+            background-color: #354c7c;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            text-align: center; /* Center horizontally */
+        }
+        h1, h2, p {
+            margin-top: 0;
+        }
+        .option {
+            width: 200px;
+            margin-bottom: 10px;
+            padding: 10px;
+            font-size: 13px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            background-color: #eaebfe;
+            cursor: pointer;
+        }
+        .option:hover {
+            background-color: #d89b00;
+        }
+        .options-container {
+            display: flex;
+            flex-direction: column; /* Arrange options in a column */
+            align-items: center; /* Center vertically */
+        }
+        .column {
+            display: inline-block;
+            width: 45%;
+            vertical-align: top;
+        }
+        @media (max-width: 600px) {
+            .column {
+                width: 100%;
+            }
+        }
+        .btn {
+            display: block;
+            width: 100%;
+            padding: 10px;
+            margin-top: 10px;
+            font-size: 16px;
+            text-align: center;
+            background-color: #b0b8ce;
+            color: #fff;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .btn:hover {
+            background-color: #d89b00;
+        }
+        #timer {
+            text-align: center;
+            margin-top: 10px;
+            font-size: 18px;
+            color: lightgreen;
+        }
+        .result {
+            margin-top: 20px;
+            font-size: 16px;
+        }
+        .passed {
+            color: green;
+        }
+        .failed {
+            color: red;
+        }
+    </style>
+</head>
+<body>
+    <div class="quiz-container">
+        <div id="homepage">
+            <h1>Popstar Quiz</h1>
+            <h2>Select the number of questions:</h2>
+            <button class="btn" onclick="startQuiz(20)">20 Questions (5 mins)</button>
+            <button class="btn" onclick="startQuiz(40)">40 Questions (10 mins)</button>
+            <button class="btn" onclick="startQuiz(60)">60 Questions (20 mins)</button>
+        </div>
+        <div id="quiz" style="display: none;">
+            <h2 id="question"></h2>
+            <div id="options" class="options-container"></div>
+            <div class="result" id="result"></div>
+            <div id="timer"></div> <!-- Timer display -->
+        </div>
+        <!-- Score display page -->
+        <div id="score-page" style="display: none;">
+            <h1>Quiz Score</h1>
+            <p id="final-score"></p>
+        </div>
+    </div>
+
+    <script>
+        const popstarQuestions = [
+            // Easy Questions
+            { question: 'Who sang the song "Shape of You"?', options: ['Ed Sheeran', 'Justin Bieber', 'Bruno Mars', 'Adele'], answer: 'Ed Sheeran' },
+            { question: 'Who is known as the "King of Pop"?', options: ['Michael Jackson', 'Elvis Presley', 'Prince', 'Justin Timberlake'], answer: 'Michael Jackson' },
+            { question: 'Who is the lead vocalist of the band Coldplay?', options: ['Chris Martin', 'Thom Yorke', 'Dave Grohl', 'Brandon Flowers'], answer: 'Chris Martin' },
+            { question: 'Which popstar released the album "1989"?', options: ['Taylor Swift', 'Adele', 'Katy Perry', 'Lady Gaga'], answer: 'Taylor Swift' },
+            { question: 'Which British singer is known for the song "Someone Like You"?', options: ['Adele', 'Amy Winehouse', 'Dua Lipa', 'Rihanna'], answer: 'Adele' },
+            { question: 'Which popstar is also known as the "Material Girl"?', options: ['Madonna', 'Cher', 'Whitney Houston', 'Beyoncé'], answer: 'Madonna' },
+            { question: 'Which boy band sang the song "I Want It That Way"?', options: ['Backstreet Boys', 'NSYNC', 'New Kids on the Block', 'One Direction'], answer: 'Backstreet Boys' },
+            { question: 'Which female popstar is known for her hit single "Roar"?', options: ['Katy Perry', 'Rihanna', 'Beyoncé', 'Ariana Grande'], answer: 'Katy Perry' },
+            { question: 'Which popstar released the song "Sorry"?', options: ['Justin Bieber', 'Drake', 'The Weeknd', 'Shawn Mendes'], answer: 'Justin Bieber' },
+            { question: 'Which popstar sang the song "Let It Go" from the movie "Frozen"?', options: ['Idina Menzel', 'Demi Lovato', 'Adele', 'Taylor Swift'], answer: 'Idina Menzel' },
+            // Medium Questions
+            { question: 'Complete the lyrics: "I got my driver\'s license last week... "', options: ['Just like we always talked about', 'Yeah, we always talked about', 'And you\'re probably with that blonde girl', 'So much for that "happy ever after"'], answer: 'Just like we always talked about' },
+            { question: 'Complete the lyrics: "You can dance, you can jive, having the time of your life... "', options: ['Ooh, see that girl', 'Digging the dancing queen', 'Watch that scene', 'Friday night and the lights are low'], answer: 'Digging the dancing queen' },
+            { question: 'Which popstar sings the song "Rolling in the Deep"?', options: ['Adele', 'Rihanna', 'Beyoncé', 'Lady Gaga'], answer: 'Adele' },
+            { question: 'Which popstar released the album "Dangerous Woman"?', options: ['Ariana Grande', 'Selena Gomez', 'Demi Lovato', 'Camila Cabello'], answer: 'Ariana Grande' },
+            { question: 'Who is known as the "Princess of Pop"?', options: ['Britney Spears', 'Christina Aguilera', 'Katy Perry', 'Taylor Swift'], answer: 'Britney Spears' },
+            { question: 'Complete the lyrics: "I kissed a girl and I liked it... "', options: ['The taste of her cherry chapstick', 'The feel of her red lipstick', 'The scent of her perfume', 'The touch of her soft lips'], answer: 'The taste of her cherry chapstick' },
+            { question: 'Which popstar sang the song "Umbrella"?', options: ['Rihanna', 'Beyoncé', 'Adele', 'Lady Gaga'], answer: 'Rihanna' },
+            { question: 'Who is known as the "Queen of Pop"?', options: ['Madonna', 'Whitney Houston', 'Beyoncé', 'Mariah Carey'], answer: 'Madonna' },
+            { question: 'Which boy band sang the song "What Makes You Beautiful"?', options: ['One Direction', 'Backstreet Boys', 'NSYNC', 'New Kids on the Block'], answer: 'One Direction' },
+            { question: 'Complete the lyrics: "I\'m bringing sexy back... "', options: ['Yeah', 'Them other boys don\'t know how to act', 'You see these shackles, baby, I\'m your slave', 'Take \'em to the bridge'], answer: 'Yeah' },
+            // Hard Questions
+            { question: 'Which popstar released the song "Toxic"?', options: ['Britney Spears', 'Christina Aguilera', 'Jessica Simpson', 'Miley Cyrus'], answer: 'Britney Spears' },
+            { question: 'Complete the lyrics: "Cause the players gonna play, play, play, play, play... "', options: ['And the haters gonna hate, hate, hate, hate, hate', 'But I\'m just gonna shake, shake, shake, shake, shake', 'And the fakers gonna fake, fake, fake, fake, fake', 'And the breakers gonna break, break, break, break, break'], answer: 'And the haters gonna hate, hate, hate, hate, hate' },
+            { question: 'Which popstar sings the song "My Heart Will Go On"?', options: ['Celine Dion', 'Whitney Houston', 'Mariah Carey', 'Barbra Streisand'], answer: 'Celine Dion' },
+            { question: 'Who is known as the "Empress of Pop"?', options: ['Britney Spears', 'Christina Aguilera', 'Lady Gaga', 'Madonna'], answer: 'Britney Spears' },
+            { question: 'Complete the lyrics: "Cause baby now we got bad blood... "', options: ['You know it used to be mad love', 'And now we got problems', 'But I got a blank space, baby', 'We\'re never ever getting back together'], answer: 'You know it used to be mad love' },
+            { question: 'Which popstar released the album "The Fame"?', options: ['Lady Gaga', 'Katy Perry', 'Taylor Swift', 'Rihanna'], answer: 'Lady Gaga' },
+            { question: 'Complete the lyrics: "Don\'t you know that you\'re toxic... "', options: ['With a taste of your lips, I\'m on a ride', 'And I love what you do, but you know that you\'re toxic', 'You\'re slipping under', 'And I love what you do, don\'t you know that you\'re toxic'], answer: 'And I love what you do, don\'t you know that you\'re toxic' },
+            { question: 'Which boy band sang the song "Bye Bye Bye"?', options: ['NSYNC', 'Backstreet Boys', 'New Kids on the Block', 'One Direction'], answer: 'NSYNC' },
+            { question: 'Complete the lyrics: "I\'m coming up so you better get this party started... "', options: ['I\'m coming up, I\'m coming up', 'I\'m coming up, so you better get this party started', 'I\'m coming up, so you better get this party started on a Saturday night', 'I\'m coming up, I\'m coming'], answer: 'I\'m coming up, so you better get this party started' },
+            { question: 'Which popstar released the song "Wannabe"?', options: ['Spice Girls', 'Destiny\'s Child', 'TLC', 'Backstreet Boys'], answer: 'Spice Girls' },
+        ];
+
+        let currentQuestionIndex;
+        let score;
+        let totalQuestions;
+        let timerInterval;
+
+        function startQuiz(numQuestions) {
+            totalQuestions = numQuestions;
+            currentQuestionIndex = 0;
+            score = 0;
+            document.getElementById('homepage').style.display = 'none';
+            document.getElementById('quiz').style.display = 'block';
+            shuffleArray(popstarQuestions);
+            showQuestion();
+            // Adjust timer based on number of questions
+            let timerDuration;
+            if (numQuestions === 20) {
+                timerDuration = 5 * 60; // 5 minutes for 20 questions
+            } else if (numQuestions === 40) {
+                timerDuration = 10 * 60; // 10 minutes for 40 questions
+            } else if (numQuestions === 60) {
+                timerDuration = 20 * 60; // 20 minutes for 60 questions
+            }
+            startTimer(timerDuration);
+        }
+
+        function startTimer(duration) {
+            let timer = duration, minutes, seconds;
+            timerInterval = setInterval(function () {
+                minutes = parseInt(timer / 60, 10);
+                seconds = parseInt(timer % 60, 10);
+
+                minutes = minutes < 10 ? "0" + minutes : minutes;
+                seconds = seconds < 10 ? "0" + seconds : seconds;
+
+                document.getElementById('timer').textContent = `Time remaining: ${minutes}:${seconds}`;
+
+                if (--timer < 0) {
+                    clearInterval(timerInterval);
+                    endQuiz();
+                }
+            }, 1000);
+        }
+
+        function showQuestion() {
+            const question = popstarQuestions[currentQuestionIndex];
+            document.getElementById('question').textContent = `Question ${currentQuestionIndex + 1}: ${question.question}`;
+            const optionsElement = document.getElementById('options');
+            optionsElement.innerHTML = '';
+            question.options.forEach(option => {
+                const button = document.createElement('button');
+                button.textContent = option;
+                button.classList.add('option');
+                button.onclick = () => selectAnswer(option);
+                optionsElement.appendChild(button);
+            });
+        }
+
+        function selectAnswer(selectedOption) {
+            const question = popstarQuestions[currentQuestionIndex];
+            let resultDisplay = '';
+            if (selectedOption === question.answer) {
+                score++;
+                resultDisplay = 'Correct!';
+            } else {
+                resultDisplay = 'Wrong!';
+            }
+            document.getElementById('result').textContent = resultDisplay;
+            setTimeout(() => {
+                document.getElementById('result').textContent = '';
+            }, 1000);
+            if (++currentQuestionIndex < totalQuestions) {
+                showQuestion();
+            } else {
+                endQuiz();
+            }
+        }
+
+        function endQuiz() {
+            clearInterval(timerInterval);
+            document.getElementById('quiz').style.display = 'none';
+            document.getElementById('score-page').style.display = 'block';
+            const finalScorePercentage = Math.round((score / totalQuestions) * 100);
+            let passFailMessage = '';
+            if (totalQuestions === 20 && score >= 10) {
+                passFailMessage = 'Passed';
+            } else if (totalQuestions === 40 && score >= 20) {
+                passFailMessage = 'Passed';
+            } else if (totalQuestions === 60 && score >= 30) {
+                passFailMessage = 'Passed';
+            } else {
+                passFailMessage = 'Failed';
+            }
+            document.getElementById('final-score').textContent = `You scored ${score} out of ${totalQuestions} (${finalScorePercentage}%). ${passFailMessage}`;
+        }
+
+        function shuffleArray(array) {
+    for (let i = array.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [array[i], array[j]] = [array[j], array[i]];
+    }
+    // Create a button to go back to the home page
+    const backButton = document.createElement('button');
+    backButton.textContent = 'Go Back to Home';
+    backButton.classList.add('btn');
+    backButton.addEventListener('click', () => {
+        // Reset quiz state and display the home page
+        document.getElementById('score-page').style.display = 'none';
+        document.getElementById('homepage').style.display = 'block';
+        document.getElementById('quiz').style.display = 'none';
+    });
+    // Append the back button to the score page
+    const scorePage = document.getElementById('score-page');
+    scorePage.appendChild(backButton);
+}
+
+    </script>
+</body>
+</html>

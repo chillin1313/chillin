@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fredericka+the+Great&family=Grandstander:ital,wght@0,100..900;1,100..900&family=Honk&family=Jaldi:wght@400;700&family=Love+Ya+Like+A+Sister&display=swap" rel="stylesheet">
+    <title>Chill Quizzes</title>
+    <style>
+        body {
+           font-family: "Grandstander", cursive;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    background-color: #b0b8ce; /* Light Blue */
+    cursor: url('images/cursor2.png'), auto;
+    background-repeat: no-repeat; /* Prevent the background image from repeating */
+    background-size: cover; /* Cover the entire background */
+    background-position: right center; /* Align the background image towards the right side */
+}
+
+        
+        @keyframes glow {
+            0% { text-shadow: 0 0 1px #bbeeff, 0 0 2px #bbeeff; }
+            50% { text-shadow: 0 0 10px #aecddd, 0 0 15px #edcc6f; }
+            100% { text-shadow: 0 0 10px #edcc6f, 0 0 20px #bbeeff; }
+        }
+
+        h1 {
+            font-family: "Love Ya Like A Sister", cursive;
+            text-align: center;
+            color: #000; /* Light yellow */
+            animation: glow 2s infinite alternate; /* Apply the glow animation */
+        }
+        .quiz-options {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding-left: 30px;
+        }
+        .quiz-option {
+            margin: 10px;
+            padding: 15px;
+            font-size: 20px;
+            color: #354c7c; /* Dark Blue */
+            background-color: #eaebfe; /* Light Purple */
+            border: 2px solid #354c7c; /* Dark Blue */
+            border-radius: 10px;
+            text-align: center;
+            width: 300px;
+        }
+        .quiz-option:hover {
+            background-color: #edcc6f; /* Dark Yellow */
+            color: #000; /* White */
+            cursor: url('images/cursor2.png'), auto;
+        }
+        .quiz-link {
+            text-decoration: none;
+            color: inherit;
+        }
+    </style>
+</head>
+<body>
+    <h1>Chill Quizzes</h1>
+    <div class="quiz-options">
+        <div class="quiz-option">
+            <a href="mp.html" class="quiz-link">Music Production Quiz</a>
+        </div>
+        <div class="quiz-option">
+            <a href="pm.html" class="quiz-link">Pop Music Quiz</a>
+        </div>
+        <div class="quiz-option">
+            <a href="country_capital_quiz.html" class="quiz-link">Coming Soon!</a>
+        </div>
+        <div class="quiz-option">
+            <a href="animal_quiz.html" class="quiz-link">Coming Soon!</a>
+        </div>
+    </div>
+</body>
+</html>
