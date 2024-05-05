@@ -187,23 +187,31 @@
             startTimer(timerDuration);
         }
 
-        function startTimer(duration) {
-            let timer = duration, minutes, seconds;
-            timerInterval = setInterval(function () {
-                minutes = parseInt(timer / 60, 10);
-                seconds = parseInt(timer % 60, 10);
+         function startTimer(duration) {
+    let timer = duration, minutes, seconds;
+    timerInterval = setInterval(function () {
+        minutes = parseInt(timer / 60, 10);
+        seconds = parseInt(timer % 60, 10);
 
-                minutes = minutes < 10 ? "0" + minutes : minutes;
-                seconds = seconds < 10 ? "0" + seconds : seconds;
+        minutes = minutes < 10 ? "0" + minutes : minutes;
+        seconds = seconds < 10 ? "0" + seconds : seconds;
 
-                document.getElementById('timer').textContent = `Time remaining: ${minutes}:${seconds}`;
+        const timerElement = document.getElementById('timer'); // Correct variable name
+        timerElement.textContent = `Time remaining: ${minutes}:${seconds}`;
 
-                if (--timer < 0) {
-                    clearInterval(timerInterval);
-                    endQuiz();
-                }
-            }, 1000);
+        // Check if less than or equal to 10 seconds remaining
+        if (timer <= 10) {
+            timerElement.style.color = "red"; // Change color to red
+        } else {
+            timerElement.style.color = "lightgreen"; // Reset color
         }
+
+        if (--timer < 0) {
+            clearInterval(timerInterval);
+            endQuiz();
+        }
+    }, 1000);
+}
 
         function showQuestion() {
             const question = popstarQuestions[currentQuestionIndex];
@@ -246,13 +254,13 @@
             const finalScorePercentage = Math.round((score / totalQuestions) * 100);
             let passFailMessage = '';
             if (totalQuestions === 20 && score >= 10) {
-                passFailMessage = 'Passed';
+                passFailMessage = 'Congratulations! You passed';
             } else if (totalQuestions === 40 && score >= 20) {
-                passFailMessage = 'Passed';
+                passFailMessage = 'Congratulations! You passed';
             } else if (totalQuestions === 60 && score >= 30) {
-                passFailMessage = 'Passed';
+                passFailMessage = 'Congratulations! You passed';
             } else {
-                passFailMessage = 'Failed';
+                passFailMessage = 'Sorry! You failed';
             }
             document.getElementById('final-score').textContent = `You scored ${score} out of ${totalQuestions} (${finalScorePercentage}%). ${passFailMessage}`;
         }
@@ -262,6 +270,7 @@
         const j = Math.floor(Math.random() * (i + 1));
         [array[i], array[j]] = [array[j], array[i]];
     }
+            
     // Create a button to go back to the home page
     const backButton = document.createElement('button');
     backButton.textContent = 'Go Back to Home';

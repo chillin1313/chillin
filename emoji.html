@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fredericka+the+Great&family=Grandstander:ital,wght@0,100..900;1,100..900&family=Honk&family=Jaldi:wght@400;700&family=Love+Ya+Like+A+Sister&display=swap" rel="stylesheet">
+
+    <title>Emoji Quiz</title>
+
+    <style>
+        body {
+            font-family: "Grandstander", cursive;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color:#b0b8ce;
+        }
+        h1 {
+            font-family: "Love Ya Like A Sister", cursive;
+            text-align-last: center;
+        }
+        h2 {
+            font-family: "Jaldi", sans-serif;
+            text-align-last: center;
+        }
+        .quiz-container {
+            width: 600px;
+            height:450px;
+            padding-left: 20px;
+            padding-right: 20px;
+            background-color: #354c7c;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            text-align: center; /* Center horizontally */
+        }
+        h1, h2, p {
+            margin-top: 0;
+        }
+        .option {
+            width: 200px;
+            margin-bottom: 30px;
+            padding: 10px;
+            font-size: 13px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            background-color: #eaebfe;
+            cursor: pointer;
+        }
+        .option:hover {
+            background-color:#d89b00;
+        }
+        .options-container {
+            display: flex;
+            flex-direction: column; /* Arrange options in a column */
+            align-items: center; /* Center vertically */
+        }
+        .column {
+            display: inline-block;
+            width: 45%;
+            vertical-align: top;
+        }
+        @media (max-width: 600px) {
+            .column {
+                width: 100%;
+            }
+        }
+        .btn {
+            display: block;
+            width: 100%;
+            padding: 10px;
+            margin-top: 10px;
+            font-size: 16px;
+            text-align: center;
+            background-color: #b0b8ce;
+            color: #fff;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .btn:hover {
+            background-color: #d89b00;
+        }
+        #timer {
+            text-align: center;
+            margin-top: 10px;
+            font-size: 18px;
+            color: lightgreen;
+        }
+    </style>
+</head>
+<body>
+    <div class="quiz-container">
+        <div id="homepage">
+            <h1>Emoji Quiz (find the related emoji)</h1>
+            <h2>Select the number of questions:</h2>
+            <button class="btn" onclick="startQuiz(10)">10 Questions(2mins)</button>
+            <button class="btn" onclick="startQuiz(20)">20 Questions(5mins)</button>
+            <button class="btn" onclick="startQuiz(30)">30 Questions(10mins)</button>
+        </div>
+        <div id="quiz" style="display: none;">
+            <h2 id="question"></h2>
+            <div id="options"></div>
+            <div class="result" id="result"></div>
+            <div id="timer"></div> <!-- Timer display -->
+        </div>
+        <!-- Score display page -->
+        <div id="score-page" style="display: none;">
+            <h1>Quiz Score</h1>
+            <p id="final-score"></p>
+        </div>
+    </div>
+
+    <script>
+        const emojiQuestions = [
+            { question: '🍕 + 🍔 = ?', options: ['🍟', '🥤', '🍦', '🌭'], answer: '🍟' },
+            { question: '🐶 + 🐱 = ?', options: ['🐹', '🦊', '🐭', '🐰'], answer: '🐹' },
+            { question: '🎥 + 🍿 = ?', options: ['🎞️', '🎬', '🎭', '📺'], answer: '🎞️' },
+            { question: '🚗 + ⛽ = ?', options: ['🚦', '🛣️', '🚧', '🏎️'], answer: '🚦' },
+            { question: '📚 + ✏️ = ?', options: ['🖍️', '📝', '📖', '🖊️'], answer: '📝' },
+            { question: '🎵 + 🎧 = ?', options: ['🎶', '🎼', '🎤', '🎷'], answer: '🎶' },
+            { question: '☔ + ☀️ = ?', options: ['❄️', '🌧️', '🌈', '⛅'], answer: '🌈' },
+            { question: '🌎 + 🌙 = ?', options: ['☀️', '🌞', '🌟', '🌌'], answer: '🌌' },
+            { question: '🚲 + 🚲 = ?', options: ['🚴', '🛴', '🚶', '🏃'], answer: '🚴' },
+            { question: '🍎 + 🍊 = ?', options: ['🍏', '🍋', '🍇', '🍒'], answer: '🍏' },
+            { question: '🍕 + 🍔 = ?', options: ['🍟', '🥤', '🍦', '🌭'], answer: '🍟' },
+    { question: '🐶 + 🐱 = ?', options: ['🐹', '🦊', '🐭', '🐰'], answer: '🐹' },
+    { question: '🎥 + 🍿 = ?', options: ['🎞️', '🎬', '🎭', '📺'], answer: '🎞️' },
+    { question: '🚗 + ⛽ = ?', options: ['🚦', '🛣️', '🚧', '🏎️'], answer: '🚦' },
+    { question: '📚 + ✏️ = ?', options: ['🖍️', '📝', '📖', '🖊️'], answer: '📝' },
+    { question: '🎵 + 🎧 = ?', options: ['🎶', '🎼', '🎤', '🎷'], answer: '🎶' },
+    { question: '☔ + ☀️ = ?', options: ['❄️', '🌧️', '🌈', '⛅'], answer: '🌈' },
+    { question: '🌎 + 🌙 = ?', options: ['☀️', '🌞', '🌟', '🌌'], answer: '🌌' },
+    { question: '🚲 + 🚲 = ?', options: ['🚴', '🛴', '🚶', '🏃'], answer: '🚴' },
+    { question: '🍎 + 🍊 = ?', options: ['🍏', '🍋', '🍇', '🍒'], answer: '🍏' },
+    { question: '🚢 + ⚓ = ?', options: ['🏝️', '🏊', '🏄', '🏊‍♀️'], answer: '🏝️' },
+    { question: '👁️ + 🍬 = ?', options: ['🍫', '🍭', '🍩', '🍰'], answer: '🍭' },
+    { question: '🏠 + 🧹 = ?', options: ['🛋️', '🖼️', '🛏️', '🧹'], answer: '🧹' },
+    { question: '🎓 + 📚 = ?', options: ['🏫', '🎒', '📓', '🖊️'], answer: '🏫' },
+    { question: '🚗 + 🛣️ = ?', options: ['🛣️', '🏞️', '🌄', '🛤️'], answer: '🛣️' },
+    { question: '🎂 + 🎈 = ?', options: ['🎉', '🍰', '🎊', '🍭'], answer: '🍰' },
+    { question: '🌧️ + ⚡ = ?', options: ['🌩️', '❄️', '🌪️', '🌊'], answer: '🌩️' },
+    { question: '💧 + 🌈 = ?', options: ['🚿', '☔', '🌊', '💦'], answer: '💦' },
+    { question: '📱 + 📷 = ?', options: ['📸', '📞', '🎥', '💻'], answer: '📸' },
+    { question: '🎄 + 🎁 = ?', options: ['🔔', '🎅', '🎉', '🌟'], answer: '🎉' },
+    { question: '🏆 + 🥇 = ?', options: ['🎖️', '🎯', '🏅', '🏆'], answer: '🏅' },
+    { question: '⚽ + 🥅 = ?', options: ['🏈', '🏀', '🎾', '⚽'], answer: '⚽' },
+    { question: '🔥 + 🏠 = ?', options: ['🌋', '🏡', '🏠', '🏚️'], answer: '🏡' },
+    { question: '🐥 + 🥚 = ?', options: ['🐣', '🐔', '🐤', '🐦'], answer: '🐣' },
+    { question: '🚀 + 🌌 = ?', options: ['🌠', '🌌', '🌟', '🚀'], answer: '🌠' },
+    { question: '🐈 + 🐟 = ?', options: ['🐾', '🐠', '🐟', '🐱'], answer: '🐾' },
+    { question: '🍦 + 🍒 = ?', options: ['🍫', '🍰', '🍓', '🍨'], answer: '🍓' },
+    { question: '🌊 + 🏖️ = ?', options: ['🏝️', '🏄', '🌴', '🏊‍♀️'], answer: '🏝️' },
+    { question: '🍳 + 🥓 = ?', options: ['🥚', '🍞', '🍳', '🥞'], answer: '🥚' },
+    { question: '🐔 + 🍗 = ?', options: ['🍖', '🍗', '🐓', '🥚'], answer: '🍗' },
+    { question: '🌌 + 🌠 = ?', options: ['🌠', '✨', '🌟', '💫'], answer: '💫' },
+    { question: '🥗 + 🥑 = ?', options: ['🍅', '🥕', '🥒', '🥑'], answer: '🥑' },
+    { question: '🚿 + 🛁 = ?', options: ['🚽', '🚰', '🛁', '🚿'], answer: '🚽' },
+    { question: '🌅 + 🌊 = ?', options: ['🌄', '🌅', '🏝️', '🏞️'], answer: '🏝️' },
+    { question: '🌇 + 🏙️ = ?', options: ['🌆', '🌃', '🌉', '🏙️'], answer: '🌆' },
+    { question: '🌧️ + 🌈 = ?', options: ['🌦️', '🌈', '☔', '⛅'], answer: '🌦️' },
+    { question: '🚘 + 🛣️ = ?', options: ['🚧', '🛣️', '🚦', '🚗'], answer: '🚧' },
+    { question: '🚶 + 🛤️ = ?', options: ['🚉', '🚶‍♂️', '🛤️', '🛤️'], answer: '🚉' },
+    { question: '🌞 + 🌻 = ?', options: ['🌸', '🌺', '🌼', '🌻'], answer: '🌻' },
+    { question: '🍎 + 🍇 = ?', options: ['🍊', '🍉', '🍇', '🍎'], answer: '🍎' },
+    { question: '🦆 + 🦢 = ?', options: ['🦆', '🦢', '🦆🦢', '🐦'], answer: '🦆🦢' },
+    { question: '🚁 + 🌄 = ?', options: ['🚁', '✈️', '🛩️', '🌅'], answer: '🚁' },
+    { question: '🎾 + 🏓 = ?', options: ['🏸', '🏏', '🏑', '🏓'], answer: '🏸' },
+    { question: '🍔 + 🍟 = ?', options: ['🌭', '🍕', '🍔', '🍟'], answer: '🍟' },
+    { question: '🏖️ + 🐚 = ?', options: ['🐠', '🏖️', '🌊', '🐚'], answer: '🏖️' },
+            
+        ];
+
+        // Function to shuffle the questions array
+        function shuffleArray(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+        }
+
+        const homepage = document.getElementById('homepage');
+        const quiz = document.getElementById('quiz');
+        const questionElement = document.getElementById('question');
+        const optionsElement = document.getElementById('options');
+        const resultElement = document.getElementById('result');
+        const timerElement = document.getElementById('timer');
+
+        let currentQuestionIndex;
+        let score;
+        let totalQuestions;
+        let timerInterval;
+
+        function startQuiz(numQuestions) {
+            totalQuestions = numQuestions;
+            currentQuestionIndex = 0;
+            score = 0;
+            homepage.style.display = 'none';
+            quiz.style.display = 'block';
+            shuffleArray(emojiQuestions);
+            showQuestion();
+            // Adjust timer based on number of questions
+            let timerDuration;
+            if (numQuestions === 10) {
+                timerDuration = 2 * 60; // 2 minutes for 10 questions
+            } else if (numQuestions === 20) {
+                timerDuration = 5 * 60; // 5 minutes for 20 questions
+            } else if (numQuestions === 30) {
+                timerDuration = 10 * 60; //10 minutes for 30 questions
+            }
+            startTimer(timerDuration);
+        }
+
+        function startTimer(duration) {
+            let timer = duration, minutes, seconds;
+            timerInterval = setInterval(function () {
+                minutes = parseInt(timer / 60, 10);
+                seconds = parseInt(timer % 60, 10);
+
+                minutes = minutes < 10 ? "0" + minutes : minutes;
+                seconds = seconds < 10 ? "0" + seconds : seconds;
+
+                timerElement.textContent = `Time remaining: ${minutes}:${seconds}`;
+
+                // Check if less than or equal to 10 seconds remaining
+                if (timer <= 10) {
+                    timerElement.style.color = "red"; // Change color to red
+                } else {
+                    timerElement.style.color = "lightgreen"; // Reset color
+                }
+
+                if (--timer < 0) {
+                    clearInterval(timerInterval);
+                    endQuiz();
+                }
+            }, 1000);
+        }
+
+        function showQuestion() {
+            const question = emojiQuestions[currentQuestionIndex];
+            questionElement.textContent = `Question ${currentQuestionIndex + 1}: ${question.question}`;
+
+            optionsElement.innerHTML = '';
+
+            const optionsContainer = document.createElement('div');
+            optionsContainer.className = 'options-container';
+
+            const options = [...question.options];
+            shuffleArray(options);
+
+            options.forEach(option => {
+                const button = createOptionButton(option, question.answer);
+                optionsContainer.appendChild(button);
+            });
+
+            optionsElement.appendChild(optionsContainer);
+        }
+
+        function createOptionButton(option, answer) {
+            const button = document.createElement('button');
+            button.textContent = option;
+            button.classList.add('option');
+            button.addEventListener('click', () => {
+                checkAnswer(option, answer);
+            });
+            return button;
+        }
+
+        function checkAnswer(selectedOption, correctAnswer) {
+            if (selectedOption === correctAnswer) {
+                score++;
+                resultElement.textContent = `Correct! Score: ${score}/${totalQuestions}`;
+            } else {
+                resultElement.textContent = `Incorrect. Score: ${score}/${totalQuestions}`;
+            }
+
+            currentQuestionIndex++;
+            if (currentQuestionIndex < totalQuestions) {
+                showQuestion();
+            } else {
+                endQuiz();
+            }
+        }
+
+        function endQuiz() {
+            clearInterval(timerInterval);
+            const passingThresholds = {
+                10: 4,   // Passing threshold for 10 questions
+                20: 8,   // Passing threshold for 20 questions
+                30: 18   // Passing threshold for 30 questions
+            };
+
+            const finalScore = `${score}/${totalQuestions}`;
+            const scorePage = document.getElementById('score-page');
+            const scoreElement = document.getElementById('final-score');
+            const passingThreshold = passingThresholds[totalQuestions];
+            const passFailMessage = score >= passingThreshold ? "Congratulations! You passed." : "Sorry! You failed.";
+
+            scoreElement.textContent = `Your final score is: ${finalScore}. ${passFailMessage}`;
+            scorePage.style.display = 'block';
+            homepage.style.display = 'none';
+            quiz.style.display = 'none';
+
+            // Create a button to go back to the home page
+            const backButton = document.createElement('button');
+            backButton.textContent = 'Go Back to Home';
+            backButton.classList.add('btn');
+            backButton.addEventListener('click', () => {
+                // Reset quiz state and display the home page
+                scorePage.style.display = 'none';
+                homepage.style.display = 'block';
+                quiz.style.display = 'none';
+            });
+
+            // Append the button to the score page
+            scorePage.appendChild(backButton);
+        }
+    </script>
+
+</body>
+</html>

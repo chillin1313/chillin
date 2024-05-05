@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+     <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fredericka+the+Great&family=Grandstander:ital,wght@0,100..900;1,100..900&family=Honk&family=Jaldi:wght@400;700&family=Love+Ya+Like+A+Sister&display=swap" rel="stylesheet">
+    
+    <title>PUBG Quiz</title>
+    <style>
+        body {
+          font-family: "Grandstander", cursive;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color:#b0b8ce;
+            background-color: #b0b8ce;
+        }
+        h1 {
+            font-family: "Love Ya Like A Sister", cursive;
+            text-align: center;
+        }
+        h2 {
+            font-family: "Jaldi", sans-serif;
+            text-align: center;
+        }
+       .quiz-container {
+            width: 600px;
+            height: 450px;
+            padding-left: 20px;
+            padding-right: 20px;
+            background-color: #354c7c;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            text-align: center; /* Center horizontally */
+        }
+        h1, h2, p {
+            margin-top: 0;
+        }
+        .btn {
+            display: block;
+            width: 100%;
+            padding: 10px;
+            margin-top: 10px;
+            font-size: 16px;
+            text-align: center;
+            background-color: #b0b8ce;
+            color: #fff;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .btn:hover {
+            background-color: #d89b00;
+        }
+        #options {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+            .option {
+    width: 100%; /* Set the width to full */
+    margin-bottom: 10px;
+    padding: 10px;
+    font-size: 13px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    background-color: #eaebfe;
+    cursor: pointer;
+    display: block; /* Display as block element */
+}
+
+        .option:hover {
+            background-color: #d89b00;
+        }
+        #result {
+            margin-top: 20px;
+            font-size: 16px;
+            font-weight: bold;
+        }
+        #timer {
+            margin-top: 20px;
+            font-size: 18px;
+            color: #28a745;
+        }
+    </style>
+</head>
+<body>
+    <div class="quiz-container">
+        <div id="homepage">
+            <h1>PUBG Quiz</h1>
+            <h2>Select the number of questions:</h2>
+            <button class="btn" onclick="startQuiz(10)">10 Questions (1 min)</button>
+            <button class="btn" onclick="startQuiz(20)">20 Questions (2 mins)</button>
+            <button class="btn" onclick="startQuiz(30)">30 Questions (3 mins)</button>
+        </div>
+        <div id="quiz" style="display: none;">
+            <h2 id="question"></h2>
+            <div id="options" class="options-container"></div>
+            <div class="result" id="result"></div>
+            <div id="timer"></div>
+        </div>
+        <div id="score-page" style="display: none;">
+            <h1>Quiz Score</h1>
+            <p id="final-score"></p>
+            <button class="btn" onclick="resetQuiz()">Play Again</button>
+        </div>
+    </div>
+
+    <script>
+        const pubgQuestions = [
+    { question: 'Which map was added to PUBG in the 4.0 update?', options: ['Sanhok', 'Miramar', 'Vikendi', 'Erangel'], answer: 'Sanhok' },
+    { question: 'Which item is used to revive teammates in PUBG?', options: ['Medkit', 'First Aid Kit', 'Bandage', 'Defibrillator'], answer: 'Defibrillator' },
+    { question: 'What is the maximum number of players in a PUBG match?', options: ['50', '75', '100', '150'], answer: '100' },
+    { question: 'Which weapon uses 5.56mm ammo in PUBG?', options: ['AKM', 'M416', 'Kar98k', 'UMP9'], answer: 'M416' },
+    { question: 'What is the name of the most popular PUBG streamer on Twitch?', options: ['Shroud', 'Ninja', 'Dr Disrespect', 'Summit1g'], answer: 'Shroud' },
+    { question: 'What is the full form of PUBG?', options: ['PlayerUnknown\'s Game Battlegrounds', 'PlayerUnknown\'s Battlegrounds', 'PlayerUnknown\'s Gun Battlegrounds', 'PlayerUnknown\'s Good Battlegrounds'], answer: 'PlayerUnknown\'s Battlegrounds' },
+    { question: 'Which vehicle is exclusive to the Vikendi map in PUBG?', options: ['Buggy', 'Aquarail', 'Snowbike', 'Mirado'], answer: 'Snowbike' },
+    { question: 'What is the default map in PUBG?', options: ['Erangel', 'Miramar', 'Vikendi', 'Sanhok'], answer: 'Erangel' },
+    { question: 'Which PUBG mode features respawning after death?', options: ['Classic', 'Arcade', 'War', 'Custom'], answer: 'War' },
+    { question: 'What is the name of the desert map in PUBG?', options: ['Sanhok', 'Miramar', 'Vikendi', 'Erangel'], answer: 'Miramar' },
+    // Additional Hard Questions
+    { question: 'What is the name of the rarest vehicle spawn in PUBG?', options: ['Flare Gun Jeep', 'Armored UAZ', 'BRDM-2', 'Mirado'], answer: 'Flare Gun Jeep' },
+    { question: 'Which attachment does NOT exist in PUBG?', options: ['Vertical Grip', 'Half Grip', 'Angled Grip', 'Dual Mag'], answer: 'Dual Mag' },
+    { question: 'What is the maximum level of armor in PUBG?', options: ['Level 1', 'Level 2', 'Level 3', 'Level 4'], answer: 'Level 3' },
+    { question: 'Which sniper rifle uses 7.62mm ammo in PUBG?', options: ['Kar98k', 'M24', 'AWM', 'Mini-14'], answer: 'AWM' },
+    { question: 'Which building in Pochinki is commonly referred to as the "School"?', options: ['Three-story Apartment', 'Two-story House', 'School Building', 'Church'], answer: 'School Building' },
+    { question: 'What is the name of the popular PUBG tournament hosted by ESL?', options: ['PUBG Global Invitational', 'PUBG Mobile Star Challenge', 'PUBG Continental Series', 'PUBG Masters Series'], answer: 'PUBG Masters Series' },
+    { question: 'Which vehicle is NOT found on the Miramar map?', options: ['Buggy', 'Rony', 'Dacia', 'Motorcycle'], answer: 'Dacia' },
+    { question: 'What is the name of the new map introduced in PUBG Season 10?', options: ['Karakin', 'Vikendi', 'Paramo', 'Haven'], answer: 'Haven' },
+    { question: 'What is the name of the automatic shotgun in PUBG?', options: ['S12K', 'DP-28', 'DBS', 'M249'], answer: 'DBS' },
+    { question: 'Which famous location in PUBG is known for its underground bunker?', options: ['Military Base', 'Georgopol', 'Novorepnoye', 'Shelter'], answer: 'Shelter' },
+     { question: 'Which building in Georgopol is often called the "Crane Building"?', options: ['Three-story Apartment', 'Two-story House', 'Crane Building', 'Factory'], answer: 'Crane Building' },
+    { question: 'What is the name of the desert map in PUBG Mobile?', options: ['Miramar', 'Erangel', 'Sanhok', 'Vikendi'], answer: 'Miramar' },
+    { question: 'Which weapon has the highest bullet velocity in PUBG?', options: ['M24', 'AWM', 'Kar98k', 'SLR'], answer: 'AWM' },
+    { question: 'What is the name of the new vehicle introduced in PUBG Season 12?', options: ['Aquarail', 'Quad Bike', 'Pickup Truck', 'Motorcycle with Sidecar'], answer: 'Quad Bike' },
+    { question: 'Which attachment increases hip-fire accuracy in PUBG?', options: ['Laser Sight', 'Flash Hider', 'Compensator', 'Extended QuickDraw Mag'], answer: 'Laser Sight' },
+    { question: 'Which area in Erangel is known for its high loot density and frequent battles?', options: ['Pochinki', 'Military Base', 'School', 'Georgopol'], answer: 'Pochinki' },
+    { question: 'What is the name of the popular PUBG tournament series organized by PUBG Corporation?', options: ['PUBG Global Invitational', 'PUBG Masters Series', 'PUBG Mobile Star Challenge', 'PUBG Continental Series'], answer: 'PUBG Continental Series' },
+    { question: 'Which weapon is exclusive to the Vikendi map in PUBG?', options: ['MP5K', 'Vector', 'UMP45', 'Micro UZI'], answer: 'MP5K' },
+    { question: 'What is the name of the vehicle added to PUBG with the Vikendi map?', options: ['Snowbike', 'Snowmobile', 'Snowboard', 'Snowcat'], answer: 'Snowmobile' },
+    { question: 'Which building in the Military Base area of Erangel is known for its intense firefights?', options: ['Control Tower', 'Barracks', 'Hospital', 'Hangars'], answer: 'Control Tower' },
+     { question: 'Which weapon has the highest bullet velocity in PUBG?', options: ['M24', 'AWM', 'Kar98k', 'SLR'], answer: 'AWM' },
+    { question: 'What is the name of the new vehicle introduced in PUBG Season 12?', options: ['Aquarail', 'Quad Bike', 'Pickup Truck', 'Motorcycle with Sidecar'], answer: 'Quad Bike' },
+    { question: 'Which attachment increases hip-fire accuracy in PUBG?', options: ['Laser Sight', 'Flash Hider', 'Compensator', 'Extended QuickDraw Mag'], answer: 'Laser Sight' },
+    { question: 'Which area in Erangel is known for its high loot density and frequent battles?', options: ['Pochinki', 'Military Base', 'School', 'Georgopol'], answer: 'Pochinki' },
+    { question: 'What is the name of the popular PUBG tournament series organized by PUBG Corporation?', options: ['PUBG Global Invitational', 'PUBG Masters Series', 'PUBG Mobile Star Challenge', 'PUBG Continental Series'], answer: 'PUBG Continental Series' },
+    { question: 'Which weapon is exclusive to the Vikendi map in PUBG?', options: ['MP5K', 'Vector', 'UMP45', 'Micro UZI'], answer: 'MP5K' },
+    { question: 'What is the name of the vehicle added to PUBG with the Vikendi map?', options: ['Snowbike', 'Snowmobile', 'Snowboard', 'Snowcat'], answer: 'Snowmobile' },
+    { question: 'Which building in the Military Base area of Erangel is known for its intense firefights?', options: ['Control Tower', 'Barracks', 'Hospital', 'Hangars'], answer: 'Control Tower' },
+    { question: 'What is the name of the founder of PUBG Corporation?', options: ['Brendan Greene', 'Hideo Kojima', 'Gabe Newell', 'Todd Howard'], answer: 'Brendan Greene' },
+    { question: 'Which of these items can be used to reduce recoil in PUBG?', options: ['Grip Tape', 'Energy Drink', 'Adrenaline Syringe', 'Painkiller'], answer: 'Grip Tape' },
+    { question: 'In which year was the first version of PUBG released on PC?', options: ['2015', '2016', '2017', '2018'], answer: '2017' },
+    { question: 'What is the name of the primary currency used in PUBG?', options: ['Battle Points (BP)', 'UC (Unknown Cash)', 'Coins', 'Credits'], answer: 'Battle Points (BP)' },
+    { question: 'Which of the following is NOT a playable map in PUBG?', options: ['Haven', 'Karakin', 'Taego', 'Island of Nyne'], answer: 'Island of Nyne' },
+    { question: 'What is the maximum distance a player can parachute in PUBG?', options: ['1500 meters', '2000 meters', '2500 meters', '3000 meters'], answer: '2000 meters' },
+    { question: 'What is the name of the vehicle that can traverse land and water in PUBG?', options: ['Aquarail', 'Jet Ski', 'Boat', 'Amphibious Vehicle'], answer: 'Aquarail' },
+    { question: 'Which of these is NOT a type of grenade in PUBG?', options: ['Smoke Grenade', 'Frag Grenade', 'Molotov Cocktail', 'Concussion Grenade'], answer: 'Concussion Grenade' },
+    { question: 'What is the maximum number of kills a player can get in a single PUBG match?', options: ['50', '60', '70', '100'], answer: '100' },
+    { question: 'Which of these attachments can be used to extend the effective range of a weapon in PUBG?', options: ['Scope', 'Suppressor', 'Flash Hider', 'Compensator'], answer: 'Scope' },
+    { question: 'What is the name of the game mode in PUBG where players compete to be the last one standing?', options: ['Battle Royale', 'War Mode', 'Team Deathmatch', 'Zombie Mode'], answer: 'Battle Royale' },
+    { question: 'Which of these vehicles is NOT a real-world military vehicle featured in PUBG?', options: ['Humvee', 'Ural', 'BRDM-2', 'M1 Abrams'], answer: 'M1 Abrams' }
+            
+];
+
+
+        let currentQuestionIndex;
+        let score;
+        let totalQuestions;
+        let timerInterval;
+
+        function startQuiz(numQuestions) {
+            totalQuestions = numQuestions;
+            currentQuestionIndex = 0;
+            score = 0;
+            document.getElementById('homepage').style.display = 'none';
+            document.getElementById('quiz').style.display = 'block';
+            shuffleArray(pubgQuestions);
+            showQuestion();
+            let timerDuration = numQuestions * 6; //seconds per question
+            startTimer(timerDuration);
+        }
+
+        function startTimer(duration) {
+            let timer = duration;
+            timerInterval = setInterval(function () {
+                const minutes = Math.floor(timer / 60);
+                let seconds = timer % 60;
+                seconds = seconds < 10 ? '0' + seconds : seconds;
+                document.getElementById('timer').textContent = `Time remaining: ${minutes}:${seconds}`;
+                if (--timer < 0) {
+                    clearInterval(timerInterval);
+                    endQuiz();
+                }
+            }, 1000);
+        }
+
+        function showQuestion() {
+            const question = pubgQuestions[currentQuestionIndex];
+            document.getElementById('question').textContent = `Question ${currentQuestionIndex + 1}: ${question.question}`;
+            const optionsElement = document.getElementById('options');
+            optionsElement.innerHTML = '';
+            question.options.forEach(option => {
+                const button = document.createElement('button');
+                button.textContent = option;
+                button.classList.add('option');
+                button.onclick = () => selectAnswer(option);
+                optionsElement.appendChild(button);
+            });
+        }
+
+        function selectAnswer(selectedOption) {
+            const question = pubgQuestions[currentQuestionIndex];
+            let resultDisplay = '';
+            if (selectedOption === question.answer) {
+                score++;
+                resultDisplay = 'Correct!';
+            } else {
+                resultDisplay = 'Wrong!';
+            }
+            document.getElementById('result').textContent = resultDisplay;
+            setTimeout(() => {
+                document.getElementById('result').textContent = '';
+            }, 1000);
+            if (++currentQuestionIndex < totalQuestions) {
+                showQuestion();
+            } else {
+                endQuiz();
+            }
+        }
+
+        function endQuiz() {
+            clearInterval(timerInterval);
+            document.getElementById('quiz').style.display = 'none';
+            document.getElementById('score-page').style.display = 'block';
+            const finalScorePercentage = Math.round((score / totalQuestions) * 100);
+            let passFailMessage = score >= totalQuestions / 2 ? 'Congratulations! You passed.' : 'Sorry! You failed.';
+            document.getElementById('final-score').textContent = `You scored ${score} out of ${totalQuestions} (${finalScorePercentage}%). ${passFailMessage}`;
+        }
+
+        function resetQuiz() {
+            document.getElementById('homepage').style.display = 'block';
+            document.getElementById('score-page').style.display = 'none';
+            clearInterval(timerInterval);
+        }
+
+        function shuffleArray(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+        }
+    </script>
+</body>
+</html>

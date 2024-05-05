@@ -11,7 +11,7 @@
     <title>Music Production Quiz</title>
 <style>
         body {
-         font-family: "Grandstander", cursive;
+            font-family: "Grandstander", cursive;
             margin: 0;
             padding: 0;
             display: flex;
@@ -198,22 +198,29 @@
     }
 
     function startTimer(duration) {
-        let timer = duration, minutes, seconds;
-        timerInterval = setInterval(function () {
-            minutes = parseInt(timer / 60, 10);
-            seconds = parseInt(timer % 60, 10);
+    let timer = duration, minutes, seconds;
+    timerInterval = setInterval(function () {
+        minutes = parseInt(timer / 60, 10);
+        seconds = parseInt(timer % 60, 10);
 
-            minutes = minutes < 10 ? "0" + minutes : minutes;
-            seconds = seconds < 10 ? "0" + seconds : seconds;
+        minutes = minutes < 10 ? "0" + minutes : minutes;
+        seconds = seconds < 10 ? "0" + seconds : seconds;
 
-            timerElement.textContent = `Time remaining: ${minutes}:${seconds}`;
+        timerElement.textContent = `Time remaining: ${minutes}:${seconds}`;
 
-            if (--timer < 0) {
-                clearInterval(timerInterval);
-                endQuiz();
-            }
-        }, 1000);
-    }
+        // Check if less than or equal to 10 seconds remaining
+        if (timer <= 10) {
+            timerElement.style.color = "red"; // Change color to red
+        } else {
+            timerElement.style.color = "lightgreen"; // Reset color
+        }
+
+        if (--timer < 0) {
+            clearInterval(timerInterval);
+            endQuiz();
+        }
+    }, 1000);
+}
 
   function showQuestion() {
     const question = hardQuestions[currentQuestionIndex];
