@@ -107,4 +107,184 @@
         <div id="timer"></div> <!-- Timer display -->
     </div>
     <!-- Score display page -->
-    <div id=
+    <div id="score-page" style="display: none;">
+        <h1>Quiz Score</h1>
+        <p id="final-score"></p>
+    </div>
+</div>
+
+<script>
+    const camilaSongs = [
+        {
+            title: "Havana",
+            lyrics: "Half of my heart is in Havana, ooh-na-na"
+        },
+        {
+            title: "Never Be the Same",
+            lyrics: "It's you, babe, and I'm a sucker for the way that you move, babe"
+        },
+        // Add more songs and their lyrics here
+    ];
+
+    const hardQuestions = [];
+
+    // Generate hard level questions
+    camilaSongs.forEach(song => {
+        const middleIndex = Math.floor(song.lyrics.length / 2);
+        const snippet = song.lyrics.substring(middleIndex - 30, middleIndex + 30); // Get a snippet from the middle
+        const question = {
+            question: `Guess the song by the lyrics: "${snippet}"`,
+            options: [song.title],
+            answer: song.title
+        };
+        hardQuestions.push(question);
+    });
+
+    // Function to shuffle the questions array
+    function shuffleArray(array) {
+        for (let i = array.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [array[i], array[j]] = [array[j], array[i]];
+        }
+    }
+
+    shuffleArray(hardQuestions);
+
+    const homepage = document.getElementById('homepage');
+    const quiz = document.getElementById('quiz');
+    const questionElement = document.getElementById('question');
+    const optionsElement = document.getElementById('options');
+    const resultElement = document.getElementById('result');
+    const timerElement = document.getElementById('timer');
+
+    let currentQuestionIndex;
+    let score;
+    let totalQuestions;
+    let timerInterval;
+
+    function startQuiz(numQuestions) {
+        totalQuestions = numQuestions;
+        currentQuestionIndex = 0;
+        score = 0;
+        homepage.style.display = 'none';
+        quiz.style.display = 'block';
+        showQuestion();
+        // Adjust timer based on number of questions
+        let timerDuration;
+        if (numQuestions === 10) {
+            timerDuration = 5 * 60; // 5 minutes for 10 questions
+        } else if (numQuestions === 20) {
+            timerDuration = 10 * 60; // 10 minutes for 20 questions
+        } else if (numQuestions === 30) {
+            timerDuration = 15 * 60; // 15 minutes for 30 questions
+        }
+        startTimer(timerDuration);
+    }
+
+    function startTimer(duration) {
+        let timer = duration, minutes, seconds;
+        timerInterval = setInterval(function () {
+            minutes = parseInt(timer / 60, 10);
+            seconds = parseInt(timer % 60, 10);
+
+            minutes = minutes < 10 ? "0" + minutes : minutes;
+            seconds = seconds < 10 ? "0" + seconds : seconds;
+
+            timerElement.textContent = `Time remaining: ${minutes}:${seconds}`;
+
+            // Check if less than or equal to 10 seconds remaining
+            if (timer <= 10) {
+                timerElement.style.color = "red"; // Change color to red
+            } else {
+                timerElement.style.color = "lightgreen"; // Reset color
+            }
+
+            if (--timer < 0) {
+                clearInterval(timerInterval);
+                endQuiz();
+            }
+        }, 1000);
+    }
+
+    function showQuestion() {
+        const question = hardQuestions[currentQuestionIndex];
+        questionElement.textContent = question.question;
+
+        optionsElement.innerHTML = '';
+
+        const optionsContainer = document.createElement('div');
+        optionsContainer.className = 'options-container';
+
+        const options = [...question.options];
+        shuffleArray(options);
+
+        options.forEach(option => {
+            const button = createOptionButton(option, question.answer);
+            optionsContainer.appendChild(button);
+        });
+
+        optionsElement.appendChild(optionsContainer);
+    }
+
+    function createOptionButton(option, answer) {
+        const button = document.createElement('button');
+        button.textContent = option;
+        button.classList.add('option');
+        button.addEventListener('click', () => {
+            checkAnswer(option, answer);
+        });
+        return button;
+    }
+
+    function checkAnswer(selectedOption, correctAnswer) {
+        if (selectedOption === correctAnswer) {
+            score++;
+            resultElement.textContent = `Correct! Score: ${score}/${totalQuestions}`;
+        } else {
+            resultElement.textContent = `Incorrect. Score: ${score}/${totalQuestions}`;
+        }
+
+        currentQuestionIndex++;
+        if (currentQuestionIndex < totalQuestions) {
+            showQuestion();
+        } else {
+            endQuiz();
+        }
+    }
+
+    function endQuiz() {
+        clearInterval(timerInterval);
+        const passingThresholds = {
+            10: 4,   // Passing threshold for 10 questions
+            20: 8,   // Passing threshold for 20 questions
+            30: 18   // Passing threshold for 30 questions
+        };
+
+        const finalScore = `${score}/${totalQuestions}`;
+        const scorePage = document.getElementById('score-page');
+        const scoreElement = document.getElementById('final-score');
+        const passingThreshold = passingThresholds[totalQuestions];
+        const passFailMessage = score >= passingThreshold ? "Congratulations! You passed." : "Sorry! You failed.";
+
+        scoreElement.textContent = `Your final score is: ${finalScore}. ${passFailMessage}`;
+        scorePage.style.display = 'block';
+        homepage.style.display = 'none';
+        quiz.style.display = 'none';
+
+        // Create a button to go back to the home page
+        const backButton = document.createElement('button');
+        backButton.textContent = 'Go Back to Home';
+        backButton.classList.add('btn');
+        backButton.addEventListener('click', () => {
+            // Reset quiz state and display the home page
+            scorePage.style.display = 'none';
+            homepage.style.display = 'block';
+            quiz.style.display = 'none';
+        });
+
+        // Append the button to the score page
+        scorePage.appendChild(backButton);
+    }
+</script>
+</body>
+</html>
